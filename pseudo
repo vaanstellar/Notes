@@ -1,0 +1,101 @@
+"If 'regadd/type' = 'Unformatted'
+     then addressType = Null
+else if 'housingtype/code' is NOT NULL
+     then 
+         if 'housingtype/code' = 121 then addressType = 'DETACHED HOUSE'
+         else if 'housingtype/code' = 122 then addressType = 'SEMI-DETACHED HOUSE'
+         else if 'housingtype/code' = 123 then addressType = 'TERRACE HOUSE'
+         else if 'housingtype/code' = 131 then addressType = 'CONDOMINIUM'
+         else if 'housingtype/code' = 132 then addressType = 'EXECUTIVE CONDOMINIUM'
+         else if 'housingtype/code' = 139 then addressType = 'APARTMENT'
+else if 'housingtype/code' is NULL
+    then 'addressType' = 'HDB'"
+"If 'regadd/type = 'Unformatted'
+       then 'address1' = 'regadd/line1/value'
+else if 'regadd/housingtype/code' = '121' / '122' / '123' / '131' / '132' / 139'
+      then 
+           'address1' = 
+           'regadd/block/value' + (if exists 'regadd/block/value')
+            ' ' + 
+            'regadd/street/value' (if exists 'regadd/steet/value')
+else if housingtype/code = NULL
+      then
+            'address1' = 
+            'BLK ' + 
+             'regadd/block/value' + (if exists 'regadd/block/value')
+             ' #' +
+             'regadd/floor/value' + (if exists 'regadd/floor/value')
+              '-'  + 
+             ' regadd/unit/value' (if exists 'regadd/unit/value')
+else 'address1' = NULL"
+"if 'regadd/type' = 'Unformatted'
+then
+'address2' = 'regadd/line2/value'
+else 
+        if 'regadd/housingtype/code' = '121' / '122' / '123'
+        then
+         'address2' = 
+                      if 'regadd/building/value' is NOT NULL then 'regadd/building/value'
+                      else 
+                       'Singapore ' + 'regadd/postal/value'
+         else if 'regadd/housingtype/code' = '131' / '132' / '139'
+         then
+          'address2' = 
+                         '#' +
+                         'regadd/floor/value' + (if 'regadd/floor/value' is NOT NULL)
+                         '-' +
+                         'regadd/unit/value' + (if 'regadd/unit/value' is NOT NULL)
+                          ' ' +
+                         'regadd/building/value' + (if 'regadd/building/value' is NOT NULL)
+            else if 'regadd/housingtype/code' is NULL
+            then
+           'address2' = 
+           'regadd/steeet/value' (if 'regadd/steeet/value' is NOT NULL)
+            else NULL	"
+"if 'regadd/type' = 'Unformatted'
+then address3 won't be returned
+else 
+        if 'regadd/housingtype/code' = '121' / '122' / '123'
+        then
+                'address3' =
+                'Singapore ' +
+                 'regadd/postal/value' (if 'regadd/building/value' is NOT NULL)
+        else if 'regadd/housingtype/code' = '131' / '132' / '139'
+        then
+                'address3' = 'Singapore ' + 'regadd/postal/value'
+         else if 'regadd/housingtype/code' is NULL
+         then
+                'address3' = 
+                            if 'regadd/building/value' is NOT NULL
+                            then
+                                     'regadd/building/value' 
+                            else if 'regadd/country/code' = 'SG'
+                             then
+                                      'Singapore ' + 'regadd/postal/value'
+                            else ()
+        else 'address3' = NULL"
+"if 'regadd/type' = 'Unformatted'
+then address4 won't be returned
+else 
+        if 'regadd/housingtype/code' = '121' / '122' / '123' /'131' / '132' / '139'
+        then
+                'address4' = NULL
+         else if 'regadd/housingtype/code' is NULL
+         then
+                  'address4' = 
+                                      if 'regadd/building/value' is NOT NULL and 'regadd/country/code' = 'SG'
+                                       then
+                                               'Singapore ' + 'regadd/postal/value' 
+                                       else if 'regadd/building/value' is NOT NULL and 'regadd/country/code' != 'SG'
+                                               then
+                                                        'MYINFOCODE' + ' ' + 'regadd/postal/value'
+                                                 else ()
+             else 'address4' = NULL"
+"if 'regadd/housingtype/code' = '121' / '122' / '123' / '131' / '132' / 139'
+    if  'regadd/country/code' = 'SG'
+    then
+           'postalCode' = 'regadd/postal/value'
+     else 
+            'postalCode' = '000000'
+else  
+'postalCode' = '000000'"
