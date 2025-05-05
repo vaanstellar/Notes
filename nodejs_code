@@ -1,0 +1,87 @@
+function formatAddress(regadd) {
+  const housingCode = regadd?.housingtype?.code;
+  const countryCode = regadd?.country?.code;
+  const isUnformatted = regadd?.type === 'Unformatted';
+
+  // Address Type
+  let addressType = null;
+  if (!isUnformatted) {
+    if (housingCode === 121) addressType = 'DETACHED HOUSE';
+    else if (housingCode === 122) addressType = 'SEMI-DETACHED HOUSE';
+    else if (housingCode === 123) addressType = 'TERRACE HOUSE';
+    else if (housingCode === 131) addressType = 'CONDOMINIUM';
+    else if (housingCode === 132) addressType = 'EXECUTIVE CONDOMINIUM';
+    else if (housingCode === 139) addressType = 'APARTMENT';
+    else if (housingCode == null) addressType = 'HDB';
+  }
+
+  // Address 1
+  let address1 = null;
+  if (isUnformatted) {
+    address1 = regadd?.line1 ?? null;
+  } else if ([121, 122, 123, 131, 132, 139].includes(housingCode)) {
+    const block = regadd?.block ?? '';
+    const street = regadd?.street ?? '';
+    address1 = `${block}${block ? ' ' : ''}${street}`.trim() || null;
+  } else if (housingCode == null) {
+    const block = regadd?.block ?? '';
+    const floor = regadd?.floor ?? '';
+    const unit = regadd?.unit ?? '';
+    address1 = `BLK ${block}${block ? ' ' : ''}#${floor}${floor ? '-' : ''}${unit}`.trim() || null;
+  }
+
+  // Address 2
+  let address2 = null;
+  if (isUnformatted) {
+    address2 = regadd?.line2 ?? null;
+  } else if ([121, 122, 123].includes(housingCode)) {
+    address2 = regadd?.building ?? `Singapore ${regadd?.postal ?? ''}`;
+  } else if ([131, 132, 139].includes(housingCode)) {
+    const floor = regadd?.floor ?? '';
+    const unit = regadd?.unit ?? '';
+    const building = regadd?.building ?? '';
+    address2 = `#${floor}${floor ? '-' : ''}${unit} ${building}`.trim() || null;
+  } else if (housingCode == null) {
+    address2 = regadd?.street ?? null;
+  }
+
+  // Address 3
+  let address3 = null;
+  if (!isUnformatted) {
+    if ([121, 122, 123].includes(housingCode)) {
+      if (regadd?.building) {
+        address3 = `Singapore ${regadd?.postal ?? ''}`;
+      }
+    } else if ([131, 132, 139].includes(housingCode)) {
+      address3 = `Singapore ${regadd?.postal ?? ''}`;
+    } else if (housingCode == null) {
+      if (regadd?.building) {
+        address3 = regadd?.building;
+      } else if (countryCode === 'SG') {
+        address3 = `Singapore ${regadd?.postal ?? ''}`;
+      }
+    }
+  }
+
+  // Address 4
+  let address4 = null;
+  if (!isUnformatted) {
+    if (housingCode == null) {
+      if (regadd?.building) {
+        if (countryCode === 'SG') {
+          address4 = `Singapore ${regadd?.postal ?? ''}`;
+        } else {
+          address4 = `MYINFOCODE ${regadd?.postal ?? ''}`;
+        }
+      }
+    }
+  }
+
+  // Postal Code
+  let postalCode = '000000';
+  if ([121, 122, 123, 131, 132, 139].includes(housingCode) && countryCode === 'SG') {
+    postalCode = regadd?.postal ?? '000000';
+  }
+
+  return { addressType, address1, address2, address3, address4, postalCode };
+}
