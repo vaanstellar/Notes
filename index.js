@@ -51,6 +51,7 @@ const convertToPdf = async (applicationHtml) => {
       margin: { top: "100px", right: "50px", bottom: "100px", left: "50px" },
       printBackground: true,
       format: "A4",
+      displayHeaderFooter: true,
       footerTemplate: `<div style=\"text-align: right;width: 297mm;font-size: 8px;\"> INCOME/Onlinelife/${date.getMonth() + 1}/${date.getFullYear()}  ●  Page <span style=\"margin-right: 1cm\"><span class=\"pageNumber\"></span> of <span class=\"totalPages\"></span></span></div>`
 
     });
